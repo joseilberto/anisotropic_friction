@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import re
+import sys
 
 
 def calculate_Deltas(data, files):
@@ -29,13 +30,15 @@ def get_save_file(files):
         f = files[0]
     else:
         f = files
-    path = '/'.join(f.split("/")[:-1])
-    return path + "/time_deltas.csv"
+    bar = bar = '/' if 'win' not in sys.platform else '\\'
+    path = bar.join(f.split(bar)[:-1]) + bar
+    return path + "time_deltas.csv"
 
 
 def load_data(files, file_format):
     data = pd.DataFrame()
-    pattern = "/data/(.*?){}".format(file_format)
+    bar = '/' if 'win' not in sys.platform else '\\'
+    pattern = "{1}data{1}(.*?){0}".format(file_format, bar)
     for idx, f in enumerate(files):
         key = re.search(pattern, f)
         columns = ["time", "x_{}".format(idx), "y_{}".format(idx)]
@@ -72,7 +75,7 @@ def plot_deltas(times, DeltaX, DeltaY):
     plt.close()
 
 
-def save_to_file(save_file, times, DeltaX, DeltaY):    
+def save_to_file(save_file, times, DeltaX, DeltaY):
     data = np.stack((times, DeltaX, DeltaY), axis = 1)
     np.savetxt(save_file, data, delimiter = ",")
 
