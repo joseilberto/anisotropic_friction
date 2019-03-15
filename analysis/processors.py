@@ -40,12 +40,15 @@ def load_data(files, file_format):
     bar = '/' if 'win' not in sys.platform else '\\'
     for idx, f in enumerate(files):
         columns = ["time", "x_{}".format(idx), "y_{}".format(idx)]
-        cur_data = pd.read_csv(f, sep = "  ", decimal = ",", header = None)
-        cur_data = cur_data.applymap(lambda string: float(string.replace(",",
-                                                        ".").replace("e", "E")))
+        file_data = []
+        with open(f, "r") as f_open:
+            for line in f_open.readlines():
+                points = line.replace("\n", "").replace(",", ".").replace("e", "E").split("  ")[1:]
+                file_data.append([float(point) for point in points])
+        cur_data = pd.DataFrame(np.array(file_data))
         cur_data.columns = columns
         cur_data.index = cur_data.iloc[:, 0]
-        cur_data = cur_data.iloc[:, [1, 2]]
+        cur_data = cur_data.iloc[:, [1, 2]]        
         if idx == 0:
             data = data.append(cur_data)
         else:
