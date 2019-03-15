@@ -38,13 +38,8 @@ def get_save_file(files):
 def load_data(files, file_format):
     data = pd.DataFrame()
     bar = '/' if 'win' not in sys.platform else '\\'
-    pattern = "{1}data{1}(.*?){0}".format(file_format, bar)
     for idx, f in enumerate(files):
-        key = re.search(pattern, f)
         columns = ["time", "x_{}".format(idx), "y_{}".format(idx)]
-        if not key:
-            continue
-        key = key.group(1)
         cur_data = pd.read_csv(f, sep = "  ", decimal = ",", header = None)
         cur_data = cur_data.applymap(lambda string: float(string.replace(",",
                                                         ".").replace("e", "E")))
