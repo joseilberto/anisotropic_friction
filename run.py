@@ -10,10 +10,15 @@ def get_files(path, file_format):
     Verify if the file is of the given format or verifies if a folder was
     given, for such case it finds all files with the given extension.
     """
+    if os.path.isfile(path):
+        _, file_ext = os.path.splitext(path)
+        file_format = (file_format if path.endswith(file_format)
+                                        else file_ext)
+        return [path], file_format
     files = ([path] if path.endswith(file_format)
                 else [path + file1 for file1 in os.listdir(path)
                         if file1.endswith(file_format)])
-    return sorted(files)
+    return sorted(files), file_format
 
 
 def set_args():
@@ -43,7 +48,7 @@ def process_args(args):
     not given.
     """
     file_format = args.format if args.format else ".dat"
-    files = get_files(args.path, file_format)
+    files, file_format = get_files(args.path, file_format)
     n_files = args.n_files if args.n_files else len(files)
     return files[:n_files], file_format
 
